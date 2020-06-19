@@ -34,17 +34,11 @@ import org.apache.catalina.startup.ClassLoaderFactory.RepositoryType;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
 
+
 /**
- * Bootstrap loader for Catalina.  This application constructs a class loader
- * for use in loading the Catalina internal classes (by accumulating all of the
- * JAR files found in the "server" directory under "catalina.home"), and
- * starts the regular execution of the container.  The purpose of this
- * roundabout approach is to keep the Catalina internal classes (and any
- * other classes they depend on, such as an XML parser) out of the system
- * class path and therefore not visible to application level classes.
+ * tomcat真正的启动类，那些sh文件就是定位到这个类的main方法
  *
- * @author Craig R. McClanahan
- * @author Remy Maucherat
+ * @author wangpin
  */
 public final class Bootstrap {
 
@@ -249,6 +243,7 @@ public final class Bootstrap {
      */
     public void init() throws Exception {
 
+        //初始化类加载器
         initClassLoaders();
 
         Thread.currentThread().setContextClassLoader(catalinaLoader);
@@ -434,12 +429,13 @@ public final class Bootstrap {
      * @param args Command line arguments to be processed
      */
     public static void main(String args[]) {
-
+        //启动上锁，肯定不能同时启动
         synchronized (daemonLock) {
             if (daemon == null) {
                 // Don't set daemon until init() has completed
                 Bootstrap bootstrap = new Bootstrap();
                 try {
+                    //初始化
                     bootstrap.init();
                 } catch (Throwable t) {
                     handleThrowable(t);
@@ -494,6 +490,7 @@ public final class Bootstrap {
             }
             handleThrowable(t);
             t.printStackTrace();
+            //异常就退出
             System.exit(1);
         }
     }
