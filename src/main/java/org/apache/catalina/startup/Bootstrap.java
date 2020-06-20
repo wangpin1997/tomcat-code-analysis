@@ -253,6 +253,7 @@ public final class Bootstrap {
         // Load our startup class and call its process() method
         if (log.isDebugEnabled())
             log.debug("Loading startup class");
+        //通过反射来创建一个Catalina对象
         Class<?> startupClass = catalinaLoader.loadClass("org.apache.catalina.startup.Catalina");
         Object startupInstance = startupClass.getConstructor().newInstance();
 
@@ -262,12 +263,12 @@ public final class Bootstrap {
         String methodName = "setParentClassLoader";
         Class<?> paramTypes[] = new Class[1];
         paramTypes[0] = Class.forName("java.lang.ClassLoader");
-        Object paramValues[] = new Object[1];
+        Object[] paramValues = new Object[1];
         paramValues[0] = sharedLoader;
         Method method =
             startupInstance.getClass().getMethod(methodName, paramTypes);
         method.invoke(startupInstance, paramValues);
-
+        //返回一个Catalina对象
         catalinaDaemon = startupInstance;
     }
 
@@ -290,11 +291,13 @@ public final class Bootstrap {
             param = new Object[1];
             param[0] = arguments;
         }
+        //通过反射调用Catalina的load方法
         Method method =
             catalinaDaemon.getClass().getMethod(methodName, paramTypes);
         if (log.isDebugEnabled()) {
             log.debug("Calling startup class " + method);
         }
+        //调用Catalina的load方法
         method.invoke(catalinaDaemon, param);
     }
 

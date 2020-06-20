@@ -536,6 +536,7 @@ public class Catalina {
 
     /**
      * Start a new server instance.
+     * 从bootstrap的load方法反射调用，进入到这里
      */
     public void load() {
 
@@ -556,6 +557,7 @@ public class Catalina {
         File file = configFile();
 
         // Create and execute our Digester
+        //创建tomcat的xml文件解析工具
         Digester digester = createStartDigester();
 
         try (ConfigurationSource.Resource resource = ConfigFileLoader.getSource().getServerXml()) {
@@ -581,6 +583,7 @@ public class Catalina {
 
         // Start the new server
         try {
+            //获取server，并初始化
             getServer().init();
         } catch (LifecycleException e) {
             if (Boolean.getBoolean("org.apache.catalina.startup.EXIT_ON_INIT_FAILURE")) {
